@@ -1,0 +1,27 @@
+{
+    "name": "arengu/prestashop-arengu-auth",
+    "description": "Connect Arengu to your store authentication system",
+    "authors": [
+        {
+            "name": "Arengu",
+            "email": "support@arengu.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.6.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.16.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "PrestaShop\\Module\\Arengu\\Auth\\": "src/"
+        }
+    },
+    "config": {
+        "preferred-install": "dist",
+        "prepend-autoloader": false
+    },
+    "type": "prestashop-module"
+}
+
