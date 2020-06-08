@@ -9,6 +9,12 @@ class ps_arengu_authPasswordlessModuleFrontController extends LoginRestControlle
         $body = $this->parseBody();
 
         $email = $this->module->utils->getTrimmedString($body, 'email');
+        $cart_id = $this->module->utils->getTrimmedString($body, 'cart_id');
+
+        // keep cart products
+        if ($cart_id) {
+            $this->context->cart = new Cart((int) $cart_id);
+        }
 
         $groups = [];
         if (isset($body['add_groups']) && is_array($body['add_groups'])) {
@@ -17,7 +23,11 @@ class ps_arengu_authPasswordlessModuleFrontController extends LoginRestControlle
 
         $defaultGroup = $this->module->utils->getTrimmedString($body, 'default_group');
 
+        Hook::exec('actionAuthenticationBefore');
+
         $customer = $this->login($email, null, $groups, $defaultGroup);
+
+        Hook::exec('actionAuthentication', ['customer' => $this->context->customer]);
 
         $this->jsonRender([
             'user' => $this->module->utils->presentUser($customer),

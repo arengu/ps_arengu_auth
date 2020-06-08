@@ -41,6 +41,7 @@ Sign up users with email and password or just with an email (passwordless signup
 | lastname _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user last name. |
 | email _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user email. |
 | password _(optional)_ | [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user plain password. If you don't provide a password a random one will be generated. This is useful if you want to use passwordless flows. |
+| cart_id _(optional)_ | [Int](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl) | The current cart ID, if you don't provide one, the cart will be emptied after user authenticates. |
 
 
 #### Request sample
@@ -50,7 +51,8 @@ Sign up users with email and password or just with an email (passwordless signup
   "firstname": "Jane",
   "firstname": "Doe",
   "email": "jane.doe@arengu.com",
-  "password": "foobar"
+  "password": "foobar",
+  "cart_id": 7
 }
 ```
 
@@ -92,15 +94,17 @@ Log in users with email and password.
 
 | Parameter | Type | Description |
 | ------ | ------ | ------ |
-| email _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user email you want to sign up. |
-| password _(required)_ | [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | Query selector or DOM element that the form will be appended to. |
+| email _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user email. |
+| password _(required)_ | [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user plain password. |
+| cart_id _(optional)_ | [Int](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl) | The current cart ID, if you don't provide one, the cart will be emptied after user authenticates. |
 
 #### Request sample
 
 ```json
 {
   "email": "jane.doe@arengu.com",
-  "password": "foobar"
+  "password": "foobar",
+  "cart_id": 7
 }
 ```
 
@@ -145,12 +149,14 @@ Authenticate users without password.
 | Parameter | Type | Description |
 | ------ | ------ | ------ |
 | email _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user email you want to authenticate. |
+| cart_id _(optional)_ | [Int](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl) | The current cart ID, if you don't provide one, the cart will be emptied after user authenticates. |
 
 #### Request sample
 
 ```json
 {
-  "email": "jane.doe@arengu.com"
+  "email": "jane.doe@arengu.com",
+  "cart_id": 7
 }
 ```
 
