@@ -23,11 +23,7 @@ class ps_arengu_authPasswordlessModuleFrontController extends LoginRestControlle
 
         $defaultGroup = $this->module->utils->getTrimmedString($body, 'default_group');
 
-        Hook::exec('actionAuthenticationBefore');
-
         $customer = $this->login($email, null, $groups, $defaultGroup);
-
-        Hook::exec('actionAuthentication', ['customer' => $this->context->customer]);
 
         $this->jsonRender([
             'user' => $this->module->utils->presentUser($customer),

@@ -41,10 +41,6 @@ class ps_arengu_authSignupModuleFrontController extends RestController
 
         $this->signup($fields, $groups, $defaultGroup);
 
-        Hook::exec('actionCustomerAccountAdd', array(
-            'newCustomer' => $customer,
-        ));
-
         $this->jsonRender([
             'user' => $this->module->utils->presentUser($this->context->customer),
         ]);
