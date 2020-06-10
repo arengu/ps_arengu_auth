@@ -2,7 +2,7 @@
 This module enables custom signup, login and passwordless endpoints to interact with PrestaShop's authentication system from [Arengu flows](https://www.arengu.com/flows/).
 
 ## Installation
-1. Download the [latest release ZIP](./releases/latest) file and **extract** it inside the `modules` directory of an existing PrestaShop installation. You should end with a file structure where you can locate the `ps_arengu_auth.php` file **precisely** in `modules/ps_arengu_auth/ps_arengu_auth.php`. Otherwise, the module will not be detected by PrestaShop.
+1. Download the [latest release ZIP](https://github.com/arengu/ps_arengu_auth/releases/latest) file and **extract** it inside the `modules` directory of an existing PrestaShop installation. You should end with a file structure where you can locate the `ps_arengu_auth.php` file **precisely** in `modules/ps_arengu_auth/ps_arengu_auth.php`. Otherwise, the module will not be detected by PrestaShop.
 2. Go to the admin panel and install from the module catalog, look in the "Other" category.
 
 ## Authentication
