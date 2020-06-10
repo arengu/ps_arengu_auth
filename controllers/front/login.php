@@ -10,12 +10,6 @@ class ps_arengu_authLoginModuleFrontController extends LoginRestController
 
         $email = $this->module->utils->getTrimmedString($body, 'email');
         $password = $this->module->utils->getTrimmedString($body, 'password');
-        $cart_id = $this->module->utils->getTrimmedString($body, 'cart_id');
-
-        // keep cart products
-        if ($cart_id) {
-            $this->context->cart = new Cart((int) $cart_id);
-        }
 
         $groups = [];
         if (isset($body['add_groups']) && is_array($body['add_groups'])) {

@@ -28,12 +28,6 @@ class ps_arengu_authSignupModuleFrontController extends RestController
             }
         }
 
-        // keep cart products
-        if (isset($body['cart_id'])) {
-            $cart_id = $body['cart_id'];
-            $this->context->cart = new Cart((int) $cart_id);
-        }
-
         // use a random password when it's absent, for paswordless signup
         if (empty($fields['password'])) {
             $fields['password'] = bin2hex(\Tools::getBytes(32));
