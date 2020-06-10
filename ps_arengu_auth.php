@@ -98,6 +98,12 @@ class ps_arengu_auth extends Module
                 ],
                 [
                     'type' => 'text',
+                    'label' => $this->l('Login with JWT:'),
+                    'name' => 'jwt_login',
+                    'readonly' => true,
+                ],
+                [
+                    'type' => 'text',
                     'label' => $this->l('Passwordless login:'),
                     'name' => 'passwordless_login',
                     'readonly' => true,
@@ -141,6 +147,7 @@ class ps_arengu_auth extends Module
             'current_private_key' => "Bearer {$this->privateKey->get()}",
             'signup' => $this->context->link->getModuleLink($this->name, 'signup'),
             'normal_login' => $this->context->link->getModuleLink($this->name, 'login'),
+            'jwt_login' => $this->context->link->getModuleLink($this->name, 'loginjwt'),
             'passwordless_login' => $this->context->link->getModuleLink($this->name, 'passwordless'),
             'email_check' => $this->context->link->getModuleLink($this->name, 'checkemail'),
         ];

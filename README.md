@@ -14,8 +14,9 @@ This module enables custom signup, login and passwordless endpoints to interact 
 
 1. [Signup](#signup)
 2. [Login](#login)
-3. [Passwordless](#passwordless)
-4. [Check existing email](#check-existing-email)
+3. [Login with JWT](#login-with-jwt)
+4. [Passwordless](#passwordless)
+5. [Check existing email](#check-existing-email)
 
 ### Authentication
 
@@ -41,7 +42,6 @@ Sign up users with email and password or just with an email (passwordless signup
 | lastname _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user last name. |
 | email _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user email. |
 | password _(optional)_ | [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user plain password. If you don't provide a password a random one will be generated. This is useful if you want to use passwordless flows. |
-| cart_id _(optional)_ | [Int](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl) | The current cart ID, if you don't provide one, the cart will be emptied after user authenticates. |
 
 
 #### Request sample
@@ -51,8 +51,7 @@ Sign up users with email and password or just with an email (passwordless signup
   "firstname": "Jane",
   "firstname": "Doe",
   "email": "jane.doe@arengu.com",
-  "password": "foobar",
-  "cart_id": 7
+  "password": "foobar"
 }
 ```
 
@@ -94,17 +93,15 @@ Log in users with email and password.
 
 | Parameter | Type | Description |
 | ------ | ------ | ------ |
-| email _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user email. |
-| password _(required)_ | [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user plain password. |
-| cart_id _(optional)_ | [Int](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl) | The current cart ID, if you don't provide one, the cart will be emptied after user authenticates. |
+| email _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user email you want to sign up. |
+| password _(required)_ | [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | Query selector or DOM element that the form will be appended to. |
 
 #### Request sample
 
 ```json
 {
   "email": "jane.doe@arengu.com",
-  "password": "foobar",
-  "cart_id": 7
+  "password": "foobar"
 }
 ```
 
@@ -136,6 +133,33 @@ Set-Cookie: PrestaShop-f4f61db....=def502006807b076956f....; expires=Sun, DD-MM-
 }
 ```
 
+### Login with JWT
+
+Log in users with a signed JWT
+
+`GET` **/module/ps_arengu_auth/loginjwt**
+
+#### URL parameters
+
+| Parameter | Type | Description |
+| ------ | ------ | ------ |
+| token _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The JSON web token. |
+| alg _(required)_ | [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | JWT encryption algorithm. |
+| redirect_url _(optional)_ | [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | Absolute URL to redirect the user. If not specified, the user will be redirected to the home page.  |
+
+#### Request sample
+
+```curl
+https://www.example.com/module/ps_arengu_auth/loginjwt?token=eyJhbGciOiJIUzI...&alg=HS256&redirect_url=https://www.example.com
+```
+
+#### Response headers sample
+
+```curl
+Location: https://www.example.com
+Set-Cookie: PrestaShop-f4f61db....=def502006807b076956f....; expires=Sun, DD-MM-YYYY HH:MM:ss GMT; Max-Age=1727998; path=/; domain=arengu.com; HttpOnly
+```
+
 ### Passwordless
 
 Authenticate users without password.
@@ -149,14 +173,12 @@ Authenticate users without password.
 | Parameter | Type | Description |
 | ------ | ------ | ------ |
 | email _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user email you want to authenticate. |
-| cart_id _(optional)_ | [Int](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl) | The current cart ID, if you don't provide one, the cart will be emptied after user authenticates. |
 
 #### Request sample
 
 ```json
 {
-  "email": "jane.doe@arengu.com",
-  "cart_id": 7
+  "email": "jane.doe@arengu.com"
 }
 ```
 
