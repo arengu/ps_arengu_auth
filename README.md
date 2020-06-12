@@ -9,7 +9,7 @@ This module enables custom signup, login and passwordless endpoints to interact 
 
 This module uses an API key to protect the operations. You can view and manage your API key under your module settings.
 
-⚠️ **IMPORTANT** ⚠️ This API key **allows to impersonate any customer in your store, so you must keep it secret and do not share it in publicly accessible areas such as GitHub, client-side code, and so forth..**
+> **Warning:** This API key **allows to impersonate any customer in your store, so you must keep it secret and do not share it in publicly accessible areas such as GitHub, client-side code, and so forth.**
 
 Authentication to the API is performed via `Authorization` header with `Bearer` schema:
 
@@ -39,10 +39,10 @@ Content-Type: application/json
 
 | Property | Type | Description |
 | ------ | ------ | ------ |
-| firstname _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user first name. |
-| lastname _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user last name. |
-| email _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user email. |
-| password _(optional)_ | [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user plain password. If you don't provide a password, a random one will be generated. This is useful if you want to use passwordless flows. |
+| firstname _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user's first name. |
+| lastname _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user's last name. |
+| email _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user's email. |
+| password _(optional)_ | [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user's plain password. If you don't provide a password, a random one will be generated. This is useful if you want to use passwordless flows. |
 
 
 #### Operation example
@@ -91,7 +91,7 @@ Content-Type: application/json
 
 | Property | Type | Description |
 | ------ | ------ | ------ |
-| email _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user email you want to sign up. |
+| email _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user's email you want to sign up. |
 | password _(required)_ | [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | Query selector or DOM element that the form will be appended to. |
 
 #### Operation example
@@ -135,13 +135,13 @@ POST /module/ps_arengu_auth/passwordless
 Content-Type: application/json
 ```
 
-⚠️ **IMPORTANT** ⚠️ This endpoint is made to be used adding one authentication factor to verify the user identity (eg. one-time password via email or SMS, social login, etc).
+> **Warning:** This endpoint was designed to be invoked once the user identity is verified using, at least, one authentication factor (eg. one-time password via email or SMS, social login, etc).
 
 #### Request payload
 
 | Property | Type | Description |
 | ------ | ------ | ------ |
-| email _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user email you want to authenticate. |
+| email _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user's email you want to authenticate. |
 
 #### Operation example
 ```
@@ -186,7 +186,7 @@ Content-Type: application/json
 
 | Property | Type | Description |
 | ------ | ------ | ------ |
-| email _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user email. |
+| email _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user's email. |
 
 #### Operation example
 ```
