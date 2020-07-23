@@ -11,13 +11,20 @@ use PrestaShop\Module\Arengu\Auth\Utils;
 
 class ps_arengu_auth extends Module
 {
-    public $privateKey;
+    public $utils;
+
+    public $apiKey;
+    public $jwtSecret;
+
+    public $JWT_EXPIRY = 300;
+    public $JWT_ALG = 'HS256';
+    public $JWT_NAMESPACE = 'https://jwt.arengu.com';
 
     public function __construct()
     {
         $this->name = 'ps_arengu_auth';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.0';
+        $this->version = '2.0.0';
         $this->author = 'Arengu';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = ['min' => '1.7.5.1'];
@@ -30,8 +37,10 @@ class ps_arengu_auth extends Module
 
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
 
-        $this->privateKey = new PrivateKey();
         $this->utils = new Utils();
+
+        $this->apiKey = new PrivateKey('ARENGU_API_KEY');
+        $this->jwtSecret = new PrivateKey('ARENGU_JWT_SECRET');
     }
 
     public function install()
@@ -40,7 +49,7 @@ class ps_arengu_auth extends Module
             return false;
         }
 
-        if (!$this->privateKey->renew()) {
+        if (!$this->apiKey->renew() || !$this->jwtSecret->renew()) {
             return false;
         }
 
@@ -53,17 +62,25 @@ class ps_arengu_auth extends Module
             return false;
         }
 
-        $this->privateKey->delete();
+        $this->apiKey->delete();
+        $this->jwtSecret->delete();
 
         return true;
     }
 
     public function getContent()
     {
-        $output = null;
+        $renewApiKey = Tools::isSubmit('renew_api_key');
+        $renweJwtSecret = Tools::isSubmit('renew_jwt_secret');
 
-        if (Tools::isSubmit('renew_key')) {
-            $this->privateKey->renew();
+        if ($renewApiKey || $renweJwtSecret) {
+            if ($renewApiKey) {
+                $this->apiKey->renew();
+            }
+
+            if ($renweJwtSecret) {
+                $this->jwtSecret->renew();
+            }
 
             Tools::redirectAdmin(
                 $this->context->link->getAdminLink('AdminModules') .
@@ -71,7 +88,7 @@ class ps_arengu_auth extends Module
             );
         }
 
-        return $output . $this->renderForm();
+        return $this->renderForm();
     }
 
     private function renderForm()
@@ -80,69 +97,66 @@ class ps_arengu_auth extends Module
 
         $fields[]['form'] = [
             'legend' => [
-                'title' => $this->l('Authentication endpoints'),
+                'title' => $this->l('API settings'),
+                'icon' => 'icon-cogs',
             ],
-
             'input' => [
                 [
                     'type' => 'text',
-                    'label' => $this->l('Signup:'),
-                    'name' => 'signup',
+                    'label' => $this->l('Base URL:'),
+                    'name' => 'field_base_url',
                     'readonly' => true,
                 ],
                 [
                     'type' => 'text',
-                    'label' => $this->l('Normal login:'),
-                    'name' => 'normal_login',
+                    'label' => $this->l('API key:'),
+                    'name' => 'field_current_api_key',
                     'readonly' => true,
                 ],
-                [
-                    'type' => 'text',
-                    'label' => $this->l('Passwordless login:'),
-                    'name' => 'passwordless_login',
-                    'readonly' => true,
-                ],
-                [
-                    'type' => 'text',
-                    'label' => $this->l('Email check:'),
-                    'name' => 'email_check',
-                    'readonly' => true,
-                ],
+            ],
+            'warning' => $this->l('This key protects the endpoints from misuse.') .
+                ' <b>' . $this->l('It allows to impersonate any customer, so you must keep it secret.') . '</b> ' .
+                $this->l('Renewing it will invalidate all the previous ones.') .
+                ' <b>' . $this->l('Make sure you know what you are doing.') . '</b>',
+            'submit' => [
+                'title' => $this->l('Renew API key'),
+                'class' => 'btn btn-danger pull-right',
+                'icon' => 'icon-warning-sign',
+                'name' => 'renew_api_key',
             ],
         ];
 
         $fields[]['form'] = [
             'legend' => [
-                'title' => $this->l('Renew private key'),
+                'title' => $this->l('JWT settings'),
+                'icon' => 'icon-cogs',
             ],
-            'error' => $this->l('This is the key that allows you to use the authentication endpoints.') .
-                ' <b>' . $this->l('It allows to impersonate any customer in your store, so you must keep it secret.') . '</b>',
-            'warning' => $this->l('Renewing your key will immediately invalidate the previous one, preventing its use.') .
-                ' <b>' . $this->l('Make sure you know what you are doing.') . '</b>',
             'input' => [
                 [
                     'type' => 'text',
-                    'label' => $this->l('Current private key:'),
-                    'name' => 'current_private_key',
+                    'label' => $this->l('JWT secret:'),
+                    'name' => 'field_current_jwt_secret',
                     'readonly' => true,
                 ],
             ],
+            'warning' => $this->l('This secret is used to generate and verify login tokens.') .
+            ' <b>' . $this->l('It allows to impersonate any customer, so you must keep it secret.') . '</b> ' .
+            $this->l('Renewing it will invalidate all the previous ones.') .
+            ' <b>' . $this->l('Make sure you know what you are doing.') . '</b>',
             'submit' => [
-                'title' => $this->l('Renew'),
+                'title' => $this->l('Renew JWT secret'),
                 'class' => 'btn btn-danger pull-right',
                 'icon' => 'icon-warning-sign',
-                'name' => 'renew_key',
+                'name' => 'renew_jwt_secret',
             ],
         ];
 
         $helper = new HelperForm();
 
         $helper->fields_value = [
-            'current_private_key' => "Bearer {$this->privateKey->get()}",
-            'signup' => $this->context->link->getModuleLink($this->name, 'signup'),
-            'normal_login' => $this->context->link->getModuleLink($this->name, 'login'),
-            'passwordless_login' => $this->context->link->getModuleLink($this->name, 'passwordless'),
-            'email_check' => $this->context->link->getModuleLink($this->name, 'checkemail'),
+            'field_current_api_key' => $this->apiKey->get(),
+            'field_current_jwt_secret' => $this->jwtSecret->get(),
+            'field_base_url' => Tools::getShopDomainSsl(true),
         ];
 
         $output .= $helper->generateForm($fields);
@@ -150,9 +164,9 @@ class ps_arengu_auth extends Module
         $output .=
             '<script>
                 $(function() {
-                    $("button[name=renew_key]").click(function(e) {
+                    $("button[name=renew_api_key],button[name=renew_jwt_secret]").click(function(e) {
                         confirm("' .
-                            $this->l('Are you sure you want to renew your private key? This is not reversible and will invalidate previous keys.') .
+                            $this->l('Are you sure you want to renew this key? This is not reversible and will invalidate previous keys.') .
                         '") || e.preventDefault();
                     });
                 });

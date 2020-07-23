@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>ps_arengu_auth</name>
+    <displayName><![CDATA[Arengu Auth]]></displayName>
+    <version><![CDATA[2.0.0]]></version>
+    <description><![CDATA[Enable custom signup, login and passwordless endpoints to interact with your store authentication system from Arengu.]]></description>
+    <author><![CDATA[Arengu]]></author>
+    <tab><![CDATA[front_office_features]]></tab>
+	<confirmUninstall><![CDATA[Are you sure you want to uninstall?]]></confirmUninstall>
+    <is_configurable>1</is_configurable>
+    <need_instance>0</need_instance>
+	<limited_countries></limited_countries>
+</module>

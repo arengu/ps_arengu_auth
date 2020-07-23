@@ -1,13 +1,28 @@
 # Arengu Auth PrestaShop module
 This module enables custom signup, login and passwordless endpoints to interact with PrestaShop's authentication system from [Arengu flows](https://www.arengu.com/flows/).
 
+Note that this module currently only allows you to manage the accounts of your customers and **not your employees'**.
+
 ## Installation
 1. Download the [latest release ZIP](https://github.com/arengu/ps_arengu_auth/releases/latest) file and **extract** it inside the `modules` directory of an existing PrestaShop installation. You should end with a file structure where you can locate the `ps_arengu_auth.php` file **precisely** in `modules/ps_arengu_auth/ps_arengu_auth.php`. Otherwise, the module will not be detected by PrestaShop.
 2. Go to the admin panel and install from the module catalog, look in the "Other" category.
 
-## Authentication
+## Available endpoints
 
-This module uses an API key to protect the operations. You can view and manage your API key under your module settings.
+These are all the operations exposed by this module:
+
+- [Private endpoints](#private-endpoints)
+  1. [Signup](#signup)
+  2. [Login](#login)
+  3. [Passwordless](#passwordless)
+  5. [Check existing email](#check-existing-email)
+- [Public endpoints](#public-endpoints)
+  1. [Login with JWT](#login-with-jwt)
+
+
+### Private endpoints
+
+The private part of the API is protected by an API key. You can view and manage your API key under your module settings, in the PrestaShop admin panel.
 
 > **Warning:** This API key **allows to impersonate any customer in your store, so you must keep it secret and do not share it in publicly accessible areas such as GitHub, client-side code, and so forth.**
 
@@ -17,16 +32,7 @@ Authentication to the API is performed via `Authorization` header with `Bearer` 
 Authorization: Bearer YOUR_API_KEY
 ```
 
-## Available endpoints
-
-These are all the operations exposed by this module:
-
-1. [Signup](#signup)
-2. [Login](#login)
-3. [Passwordless](#passwordless)
-4. [Check existing email](#check-existing-email)
-
-### Signup
+#### Signup
 
 Sign up users with email and password or just with an email (passwordless signup).
 
@@ -35,7 +41,7 @@ POST /module/ps_arengu_auth/signup
 Content-Type: application/json
 ```
 
-#### Request payload
+##### Request payload
 
 | Property | Type | Description |
 | ------ | ------ | ------ |
@@ -43,9 +49,10 @@ Content-Type: application/json
 | lastname _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user's last name. |
 | email _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user's email. |
 | password _(optional)_ | [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user's plain password. If you don't provide a password, a random one will be generated. This is useful if you want to use passwordless flows. |
+| expires_in _(optional)_ | [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number) | Number of seconds that the JWT will be valid. By default it's 300 (5 minutes). |
+| redirect_uri _(optional)_ | [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The URL where you want to redirect the user after logging him in when you send him to the JWT verification endpoint. By default it's the user account page. |
 
-
-#### Operation example
+##### Operation example
 ```
 > POST /module/ps_arengu_auth/signup
 > Content-Type: application/json
@@ -58,7 +65,6 @@ Content-Type: application/json
 
 < HTTP/1.1 200 OK
 < Content-Type: application/json
-< Set-Cookie: PrestaShop-f4f61db....=def502006807b076956f....; expires=Sun, DD-MM-YYYY HH:MM:ss GMT; Max-Age=1727998; path=/; domain=arengu.com; HttpOnly
 {
   "user": {
     "id": 1,
@@ -74,30 +80,34 @@ Content-Type: application/json
     "groups": [
       3
     ]
-  }
+  },
+  "token": "...",
+  "login_url": "..."
 }
 ```
 
-### Login
+#### Login
 
 Log in users with email and password.
 
 ```
-POST /module/ps_arengu_auth/login
+POST /module/ps_arengu_auth/login_password
 Content-Type: application/json
 ```
 
-#### Request payload
+##### Request payload
 
 | Property | Type | Description |
 | ------ | ------ | ------ |
 | email _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user's email you want to sign up. |
 | password _(required)_ | [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | Query selector or DOM element that the form will be appended to. |
+| expires_in _(optional)_ | [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number) | Number of seconds that the JWT will be valid. By default it's 300 (5 minutes). |
+| redirect_uri _(optional)_ | [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The URL where you want to redirect the user after logging him in when you send him to the JWT verification endpoint. By default it's the user account page. |
 
-#### Operation example
+##### Operation example
 
 ```
-POST /module/ps_arengu_auth/login
+POST /module/ps_arengu_auth/login_password
 Content-Type: application/json
 {
   "email": "jane.doe@arengu.com",
@@ -106,7 +116,6 @@ Content-Type: application/json
 
 < HTTP/1.1 200 OK
 < Content-Type: application/json
-Set-Cookie: PrestaShop-f4f61db....=def502006807b076956f....; expires=Sun, DD-MM-YYYY HH:MM:ss GMT; Max-Age=1727998; path=/; domain=arengu.com; HttpOnly
 {
   "user": {
     "id": 1,
@@ -122,16 +131,17 @@ Set-Cookie: PrestaShop-f4f61db....=def502006807b076956f....; expires=Sun, DD-MM-
     "groups": [
       3
     ]
-  }
+  },
+  "token": "...",
+  "login_url": "..."
 }
 ```
-
-### Passwordless
+#### Passwordless
 
 Authenticate users without password.
 
 ```
-POST /module/ps_arengu_auth/passwordless
+POST /module/ps_arengu_auth/passwordless_login
 Content-Type: application/json
 ```
 
@@ -142,10 +152,12 @@ Content-Type: application/json
 | Property | Type | Description |
 | ------ | ------ | ------ |
 | email _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user's email you want to authenticate. |
+| expires_in _(optional)_ | [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number) | Number of seconds that the JWT will be valid. By default it's 300 (5 minutes). |
+| redirect_uri _(optional)_ | [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The URL where you want to redirect the user after logging him in when you send him to the JWT verification endpoint. By default it's the user account page. |
 
-#### Operation example
+##### Operation example
 ```
-> POST /module/ps_arengu_auth/passwordless
+> POST /module/ps_arengu_auth/passwordless_login
 > Content-Type: application/json
 {
   "email": "jane.doe@arengu.com"
@@ -153,7 +165,6 @@ Content-Type: application/json
 
 < HTTP/1.1 200 OK
 < Content-Type: application/json
-< Set-Cookie: PrestaShop-f4f61db....=def502006807b076956f....; expires=Sun, DD-MM-YYYY HH:MM:ss GMT; Max-Age=1727998; path=/; domain=arengu.com; HttpOnly
 {
   "user": {
     "id": 1,
@@ -169,28 +180,30 @@ Content-Type: application/json
     "groups": [
       3
     ]
-  }
+  },
+  "token": "...",
+  "login_url": "..."
 }
 ```
 
-### Check existing email
+#### Check existing email
 
 Check if an email exists in your database.
 
 ```
-POST /module/ps_arengu_auth/checkemail
+POST /module/ps_arengu_auth/check_email
 Content-Type: application/json
 ```
 
-#### Request payload
+##### Request payload
 
 | Property | Type | Description |
 | ------ | ------ | ------ |
 | email _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | The user's email. |
 
-#### Operation example
+##### Operation example
 ```
-> POST /module/ps_arengu_auth/checkemail
+> POST /module/ps_arengu_auth/check_email
 > Content-Type: application/json
 {
   "email": "jane.doe@arengu.com"
@@ -203,3 +216,16 @@ Content-Type: application/json
 }
 ```
 
+### Public endpoints
+
+#### Login with JWT
+
+Make a user to be logged in by redirecting him to this URL with a signed JWT that you previously received as a response in a signup or login request.
+
+`GET` **/module/ps_arengu_auth/login_jwt**
+
+##### URL parameters
+
+| Parameter | Type | Description |
+| ------ | ------ | ------ |
+| token _(required)_| [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | A signed JSON web token (JWT), containing `sub` (the user ID), `email` (the user email) and optionally `redirect_uri` with the absolute or relative URL the user will be redirected after the login. If the latter is not specified, the user will be redirected to the home page. |

@@ -6,7 +6,7 @@ class PrivateKey
 {
     private $name;
 
-    public function __construct($name = 'ARENGU_PRIVATE_KEY')
+    public function __construct($name)
     {
         $this->name = $name;
     }
@@ -23,7 +23,17 @@ class PrivateKey
 
     public function get()
     {
-        return \Configuration::get($this->name);
+        $key = \Configuration::get($this->name);
+
+        // if the key somehow got deleted from the config it's preferable
+        // to break everything immediately instead of allowing empty keys
+        if ($key === false) {
+            die(\Tools::displayError(
+                "The PrivateKey '{$this->name}' cannot be found, please reinstall the module"
+            ));
+        }
+
+        return $key;
     }
 
     public function set($value)

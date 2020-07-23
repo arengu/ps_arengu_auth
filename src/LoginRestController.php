@@ -44,4 +44,39 @@ class LoginRestController extends RestController
 
         return $customer;
     }
+
+    protected function getCustomerFromBody($body, $allowPasswordless)
+    {
+        $email = $this->module->utils->getTrimmedString($body, 'email');
+        $password = $allowPasswordless ? null : $this->module->utils->getTrimmedString($body, 'password');
+
+        $groupsParams = $this->getGroupsParams($body);
+
+        $customer = $this->login(
+            $email,
+            $password,
+            $groupsParams['groups'],
+            $groupsParams['defaultGroup']
+        );
+
+        return $customer;
+    }
+
+    protected function processLogin($allowPasswordless)
+    {
+        $body = $this->parseBody();
+
+        $customer = $this->getCustomerFromBody($body, $allowPasswordless);
+
+        $params = $this->getTokenParams($body);
+        $token = $this->buildToken(
+            $customer,
+            $params['expiresIn'],
+            $params['redirectUri']
+        );
+
+        $this->jsonRender(
+            $this->buildOutput($customer, $token)
+        );
+    }
 }

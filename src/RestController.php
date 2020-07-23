@@ -2,6 +2,8 @@
 
 namespace PrestaShop\Module\Arengu\Auth;
 
+use Firebase\JWT\JWT;
+
 class RestController extends \ModuleFrontController
 {
     public function __construct()
@@ -64,8 +66,66 @@ class RestController extends \ModuleFrontController
 
         $receivedKey = substr($receivedHeader, 7);
 
-        if (!$this->module->privateKey->equals($receivedKey)) {
+        if (!$this->module->apiKey->equals($receivedKey)) {
             $this->error('Invalid key', 403);
         }
+    }
+
+    protected function buildToken($customer, $expiresIn, $redirectUri)
+    {
+        $alg = $this->module->JWT_ALG;
+        $secret = $this->module->jwtSecret->get();
+
+        $payload = [
+            'iss' => $_SERVER['SERVER_NAME'],
+            'exp' => $_SERVER['REQUEST_TIME'] + $expiresIn,
+            'email' => $customer->email,
+            'sub' => (string) $customer->id,
+        ];
+
+        if ($redirectUri) {
+            $payload['redirect_uri'] = $redirectUri;
+        }
+
+        return JWT::encode($payload, $secret, $alg);
+    }
+
+    protected function buildOutput($customer, $token)
+    {
+        return [
+            'user' => $this->module->utils->presentUser($customer),
+            'token' => $token,
+            'login_url' => $this->context->link->getModuleLink(
+                $this->module->name, 'login_jwt', ['token' => $token]
+            ),
+        ];
+    }
+
+    protected function getGroupsParams($body)
+    {
+        $params = [];
+
+        $params['defaultGroup'] = $this->module->utils->getTrimmedString($body, 'default_group');
+
+        $params['groups'] = [];
+        if (isset($body['add_groups']) && is_array($body['add_groups'])) {
+            $params['groups'] = $body['add_groups'];
+        }
+
+        return $params;
+    }
+
+    protected function getTokenParams($body)
+    {
+        $params = [
+            'expiresIn' => (int) $this->module->utils->getTrimmedString($body, 'expires_in'),
+            'redirectUri' => $this->module->utils->getTrimmedString($body, 'redirect_uri'),
+        ];
+
+        if (!$params['expiresIn']) {
+            $params['expiresIn'] = $this->module->JWT_EXPIRY;
+        }
+
+        return $params;
     }
 }

@@ -6,20 +6,13 @@ class ps_arengu_authSignupModuleFrontController extends RestController
 {
     public function postProcess()
     {
-        $fields = $groups = [];
-
         $body = $this->parseBody();
 
-        // first extract group settings
-        if (isset($body['add_groups']) && is_array($body['add_groups'])) {
-            $groups = $body['add_groups'];
-            unset($body['add_groups']);
-        }
+        $groupsParams = $this->getGroupsParams($body);
+        $tokenParams = $this->getTokenParams($body);
 
-        $defaultGroup = $this->module->utils->getTrimmedString($body, 'default_group');
-        unset($body['default_group']);
-
-        // then the rest of the string fields
+        // allow for potential custom signup fields
+        $fields = [];
         foreach (array_keys($body) as $fieldName) {
             $fieldValue = $this->module->utils->getTrimmedString($body, $fieldName);
 
@@ -28,16 +21,16 @@ class ps_arengu_authSignupModuleFrontController extends RestController
             }
         }
 
-        // use a random password when it's absent, for paswordless signup
+        // use a random password when it's absent, for passwordless signup
         if (empty($fields['password'])) {
             $fields['password'] = bin2hex(\Tools::getBytes(32));
         }
 
-        $this->signup($fields, $groups, $defaultGroup);
+        $customer = $this->signup($fields, $groupsParams['groups'], $groupsParams['defaultGroup']);
 
-        $this->jsonRender([
-            'user' => $this->module->utils->presentUser($this->context->customer),
-        ]);
+        $token = $this->buildToken($customer, $tokenParams['expiresIn'], $tokenParams['redirectUri']);
+
+        $this->jsonRender($this->buildOutput($customer, $token));
     }
 
     private function signup(array $fields, array $groups = [], $defaultGroup = null)
@@ -64,5 +57,7 @@ class ps_arengu_authSignupModuleFrontController extends RestController
 
         // log the user in
         $this->context->updateCustomer($customer);
+
+        return $customer;
     }
 }

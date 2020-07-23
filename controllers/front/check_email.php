@@ -2,7 +2,7 @@
 
 use PrestaShop\Module\Arengu\Auth\RestController;
 
-class ps_arengu_authCheckEmailModuleFrontController extends RestController
+class ps_arengu_authCheck_EmailModuleFrontController extends RestController
 {
     public function postProcess()
     {
