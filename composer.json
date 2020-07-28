@@ -1,6 +1,6 @@
 {
-    "name": "arengu/prestashop-arengu-auth",
-    "description": "Connect Arengu to your store authentication system",
+    "name": "arengu/ps_arengu_auth",
+    "description": "Connect Arengu to your PrestaShop installation",
     "authors": [
         {
             "name": "Arengu",
