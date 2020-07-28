@@ -15,15 +15,34 @@ class ps_arengu_authLogin_JwtModuleFrontController extends LoginRestController
                 [$this->module->JWT_ALG]
             );
         } catch (ExpiredException $ex) {
-            return $this->error($this->l('Sorry, the provided token is expired.'));
+            return $this->error(
+                $this->l('Sorry, the provided token is expired.')
+            );
         } catch (\Exception $ex) {
-            return $this->error($this->l('Sorry, the provided token is not valid.'));
+            return $this->error(
+                $this->l('Sorry, the provided token is not valid.')
+            );
         }
 
-        $issuer = $this->module->utils->getTrimmedString($decodedToken, 'iss');
-        $email = $this->module->utils->getTrimmedString($decodedToken, 'email');
-        $customerId = $this->module->utils->getTrimmedString($decodedToken, 'sub');
-        $redirectUri = $this->module->utils->getTrimmedString($decodedToken, 'redirect_uri');
+        $issuer = $this->module->utils->getTrimmedString(
+            $decodedToken,
+            'iss'
+        );
+
+        $email = $this->module->utils->getTrimmedString(
+            $decodedToken,
+            'email'
+        );
+
+        $customerId = $this->module->utils->getTrimmedString(
+            $decodedToken,
+            'sub'
+        );
+
+        $redirectUri = $this->module->utils->getTrimmedString(
+            $decodedToken,
+            'redirect_uri'
+        );
 
         if ($issuer !== $_SERVER['SERVER_NAME'] || !$email || !$customerId) {
             $this->error();
@@ -31,8 +50,8 @@ class ps_arengu_authLogin_JwtModuleFrontController extends LoginRestController
 
         $customer = $this->login($email, null, [], null);
 
-        // check for freaky coincidence where 2 users somehow managed to exchange email
-        // addresses between them after the token was generated
+        // check for freaky coincidence where 2 users somehow managed to
+        // exchange email addresses between them after the token was generated
         if ((string) $customer->id !== $customerId) {
             return $this->error($this->l('There was a problem validating your session, please try again.'));
         }
@@ -47,7 +66,9 @@ class ps_arengu_authLogin_JwtModuleFrontController extends LoginRestController
 
     protected function error($message, $status = 400)
     {
-        $this->setTemplate('module:ps_arengu_auth/views/templates/front/error.tpl');
+        $this->setTemplate(
+            'module:ps_arengu_auth/views/templates/front/error.tpl'
+        );
 
         $this->context->smarty->assign([
             'message' => $message,

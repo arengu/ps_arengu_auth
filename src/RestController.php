@@ -96,7 +96,9 @@ class RestController extends \ModuleFrontController
             'user' => $this->module->utils->presentUser($customer),
             'token' => $token,
             'login_url' => $this->context->link->getModuleLink(
-                $this->module->name, 'login_jwt', ['token' => $token]
+                $this->module->name,
+                'login_jwt',
+                ['token' => $token]
             ),
         ];
     }
@@ -105,7 +107,10 @@ class RestController extends \ModuleFrontController
     {
         $params = [];
 
-        $params['defaultGroup'] = $this->module->utils->getTrimmedString($body, 'default_group');
+        $params['defaultGroup'] = $this->module->utils->getTrimmedString(
+            $body,
+            'default_group'
+        );
 
         $params['groups'] = [];
         if (isset($body['add_groups']) && is_array($body['add_groups'])) {
@@ -118,8 +123,15 @@ class RestController extends \ModuleFrontController
     protected function getTokenParams($body)
     {
         $params = [
-            'expiresIn' => (int) $this->module->utils->getTrimmedString($body, 'expires_in'),
-            'redirectUri' => $this->module->utils->getTrimmedString($body, 'redirect_uri'),
+            'expiresIn' => (int) $this->module->utils->getTrimmedString(
+                $body,
+                'expires_in'
+            ),
+
+            'redirectUri' => $this->module->utils->getTrimmedString(
+                $body,
+                'redirect_uri'
+            ),
         ];
 
         if (!$params['expiresIn']) {

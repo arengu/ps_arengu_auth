@@ -35,7 +35,9 @@ class ps_arengu_auth extends Module
         $this->displayName = $this->l('Arengu Auth');
         $this->description = $this->l('Enable custom signup, login and passwordless endpoints to interact with your store authentication system from Arengu.');
 
-        $this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
+        $this->confirmUninstall = $this->l(
+            'Are you sure you want to uninstall?'
+        );
 
         $this->utils = new Utils();
 

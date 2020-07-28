@@ -14,7 +14,10 @@ class ps_arengu_authSignupModuleFrontController extends RestController
         // allow for potential custom signup fields
         $fields = [];
         foreach (array_keys($body) as $fieldName) {
-            $fieldValue = $this->module->utils->getTrimmedString($body, $fieldName);
+            $fieldValue = $this->module->utils->getTrimmedString(
+                $body,
+                $fieldName
+            );
 
             if ($fieldValue !== '') {
                 $fields[$fieldName] = $fieldValue;
@@ -26,14 +29,22 @@ class ps_arengu_authSignupModuleFrontController extends RestController
             $fields['password'] = bin2hex(\Tools::getBytes(32));
         }
 
-        $customer = $this->signup($fields, $groupsParams['groups'], $groupsParams['defaultGroup']);
+        $customer = $this->signup(
+            $fields,
+            $groupsParams['groups'],
+            $groupsParams['defaultGroup']
+        );
 
         $token = $this->buildToken($customer, $tokenParams['expiresIn'], $tokenParams['redirectUri']);
 
         $this->jsonRender($this->buildOutput($customer, $token));
     }
 
-    private function signup(array $fields, array $groups = [], $defaultGroup = null)
+    private function signup(
+        array $fields,
+        array $groups = [],
+        $defaultGroup = null
+    )
     {
         $form = $this
             ->makeCustomerForm()

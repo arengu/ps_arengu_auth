@@ -4,7 +4,12 @@ namespace PrestaShop\Module\Arengu\Auth;
 
 class LoginRestController extends RestController
 {
-    protected function login($email, $password = null, array $groups = [], $defaultGroup = null)
+    protected function login(
+        $email,
+        $password = null,
+        array $groups = [],
+        $defaultGroup = null
+    )
     {
         $translator = $this->getTranslator();
 

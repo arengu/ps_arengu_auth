@@ -29,7 +29,8 @@ class PrivateKey
         // to break everything immediately instead of allowing empty keys
         if ($key === false) {
             die(\Tools::displayError(
-                "The PrivateKey '{$this->name}' cannot be found, please reinstall the module"
+                "The PrivateKey '{$this->name}' cannot be found. " .
+                'Please uninstall and then install the module again.'
             ));
         }
 
