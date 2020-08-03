@@ -18,17 +18,7 @@ jobs:
       with:
         persist-credentials: false
 
-    - name: Cache dependencies
-      id: composer-cache
-      uses: actions/cache@v2
-      with:
-        path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-php-
-
     - name: Install dependencies
-      if: steps.composer-cache.outputs.cache-hit != 'true'
       run: composer install --no-dev --classmap-authoritative --no-progress --no-suggest
 
     - name: Compress directory
