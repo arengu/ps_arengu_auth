@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      BUILD_FILENAME: ${{ github.event.repository.name }}_${{ github.ref }}.zip
+      BUILD_FILENAME: ${{ github.event.repository.name }}_${{ github.event.release.tag_name }}.zip
 
     steps:
     - name: Checkout repository
@@ -36,9 +36,9 @@ jobs:
 
     - name: Compress directory
       run: |
-        REPO_DIRNAME=$(basename $(pwd))
+        SOURCE_DIR=$(basename $(pwd))
         cd ..
-        zip -9 -q -r "$BUILD_FILENAME" "$REPO_DIRNAME" --exclude "*/.*"
+        zip -9 -q -r "$BUILD_FILENAME" "$SOURCE_DIR" --exclude "*/.*"
 
     - name: Create release
       id: create-release
@@ -46,8 +46,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: ${{ github.ref }}
+        tag_name: ${{ github.event.release.tag_name }}
+        release_name: ${{ github.event.release.tag_name }}
 
     - name: Upload release asset
       id: upload-release-asset
