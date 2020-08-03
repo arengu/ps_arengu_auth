@@ -1,9 +1,9 @@
 name: Release version
 
 on:
-  push:
-    tags:
-      - '*'
+  release:
+    types: 
+      - created
 
 jobs:
   build:
@@ -40,22 +40,13 @@ jobs:
         cd ..
         zip -9 -q -r "$BUILD_FILENAME" "$SOURCE_DIR" --exclude "*/.*"
 
-    - name: Create release
-      id: create-release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.event.release.tag_name }}
-        release_name: ${{ github.event.release.tag_name }}
-
     - name: Upload release asset
       id: upload-release-asset
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create-release.outputs.upload_url }}
+        upload_url: ${{ github.event.release.upload_url }}
         asset_path: ../${{ env.BUILD_FILENAME }}
         asset_name: ${{ env.BUILD_FILENAME }}
         asset_content_type: application/zip
