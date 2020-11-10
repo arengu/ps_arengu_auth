@@ -23,6 +23,21 @@ class PrivateKey
 
     public function get()
     {
+        $env = false;
+
+        switch($this->name) {
+            case 'ARENGU_API_KEY':
+                $env = getenv('ARENGU_AUTH_API_KEY');
+                break;
+            case 'ARENGU_JWT_SECRET':
+                $env = getenv('ARENGU_AUTH_JWT_SECRET');
+                break;
+        }
+
+        if($env !== false) {
+            return $env;
+        }
+
         $key = \Configuration::get($this->name);
 
         // if the key somehow got deleted from the config it's preferable
