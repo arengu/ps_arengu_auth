@@ -24,7 +24,7 @@ class ps_arengu_auth extends Module
     {
         $this->name = 'ps_arengu_auth';
         $this->tab = 'front_office_features';
-        $this->version = '2.0.0';
+        $this->version = '{{ VERSION }}';
         $this->author = 'Arengu';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = ['min' => '1.7.5.1'];

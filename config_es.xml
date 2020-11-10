@@ -2,7 +2,7 @@
 <module>
     <name>ps_arengu_auth</name>
     <displayName><![CDATA[Arengu Auth]]></displayName>
-    <version><![CDATA[2.0.0]]></version>
+    <version><![CDATA[{{ VERSION }}]]></version>
     <description><![CDATA[Enable custom signup, login and passwordless endpoints to interact with your store authentication system from Arengu.]]></description>
     <author><![CDATA[Arengu]]></author>
     <tab><![CDATA[front_office_features]]></tab>
