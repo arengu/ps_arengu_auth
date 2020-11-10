@@ -31,7 +31,7 @@ class RestController extends \ModuleFrontController
 
     protected function jsonRender($value, $status = 200)
     {
-        ob_end_clean();
+        @ob_end_clean();
 
         http_response_code($status);
         header('Content-Type: application/json');

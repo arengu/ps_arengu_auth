@@ -45,7 +45,7 @@ class ps_arengu_authLogin_JwtModuleFrontController extends LoginRestController
         );
 
         if ($issuer !== $_SERVER['SERVER_NAME'] || !$email || !$customerId) {
-            $this->error();
+            $this->error($this->l('Sorry, the provided token is not valid.'));
         }
 
         $customer = $this->login($email, null, [], null);
