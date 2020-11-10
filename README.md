@@ -12,12 +12,12 @@ Note that this module currently only allows you to manage the accounts of your c
 These are all the operations exposed by this module:
 
 - [Private endpoints](#private-endpoints)
-  1. [Signup](#signup)
-  2. [Login](#login)
+  1. [Sign up](#sign-up)
+  2. [Log in](#log-in)
   3. [Passwordless](#passwordless)
   5. [Check existing email](#check-existing-email)
 - [Public endpoints](#public-endpoints)
-  1. [Login with JWT](#login-with-jwt)
+  1. [Log in with JWT](#log-in-with-jwt)
 
 
 ### Private endpoints
@@ -32,7 +32,7 @@ Authentication to the API is performed via `Authorization` header with `Bearer` 
 Authorization: Bearer YOUR_API_KEY
 ```
 
-#### Signup
+#### Sign up
 
 Sign up users with email and password or just with an email (passwordless signup).
 
@@ -86,7 +86,7 @@ Content-Type: application/json
 }
 ```
 
-#### Login
+#### Log in
 
 Log in users with email and password.
 
@@ -218,7 +218,7 @@ Content-Type: application/json
 
 ### Public endpoints
 
-#### Login with JWT
+#### Log in with JWT
 
 Make a user to be logged in by redirecting him to this URL with a signed JWT that you previously received as a response in a signup or login request.
 
