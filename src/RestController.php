@@ -49,25 +49,31 @@ class RestController extends \ModuleFrontController
         $this->jsonRender(['errors' => $messages], $status);
     }
 
+    private function badPrivateKey($msg)
+    {
+        header('WWW-Authenticate: Bearer', true);
+        $this->error($msg, 401);
+    }
+
     protected function checkPrivateKey()
     {
         $receivedHeader = $this->module->utils->getAuthorizationHeader();
 
         if (!$receivedHeader) {
-            $this->error('Authorization header is missing', 403);
+            $this->badPrivateKey('Authorization header is missing');
         }
 
         // len('Bearer ') = 7
         $receivedPrefix = substr($receivedHeader, 0, 7);
 
         if ($receivedPrefix !== 'Bearer ') {
-            $this->error('Invalid auth type', 403);
+            $this->badPrivateKey('Invalid auth type');
         }
 
         $receivedKey = substr($receivedHeader, 7);
 
         if (!$this->module->apiKey->equals($receivedKey)) {
-            $this->error('Invalid key', 403);
+            $this->badPrivateKey('Invalid key');
         }
     }
 
