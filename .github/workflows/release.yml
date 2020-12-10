@@ -22,7 +22,7 @@ jobs:
       run: composer install --no-dev --classmap-authoritative --no-progress --no-suggest
 
     - name: Set version
-      run: sed -i -e 's/{{ VERSION }}/${{ github.event.release.tag_name }}/g' {ps_arengu_auth.php,config_es.xml}
+      run: sed -i -e 's/{{ VERSION }}/${{ github.event.release.tag_name }}/g' {ps_arengu_auth.php,config.xml,config_*.xml}
 
     - name: Compress directory
       run: |
