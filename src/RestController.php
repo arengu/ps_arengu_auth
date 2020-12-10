@@ -36,8 +36,13 @@ class RestController extends \ModuleFrontController
         http_response_code($status);
         header('Content-Type: application/json');
 
-        $this->ajaxRender(json_encode($value));
-        exit;
+        if (method_exists($this, 'ajaxDie')) {
+            // deprecated since 1.7.5.0
+            $this->ajaxDie(json_encode($value));
+        } else {
+            $this->ajaxRender(json_encode($value));
+            exit;
+        }
     }
 
     protected function error($messages, $status = 400)
